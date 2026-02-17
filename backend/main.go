@@ -30,7 +30,13 @@ func main() {
 		log.Fatal("DATABASE_URL must be set")
 	}
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// Fix for Supabase Transaction Pooler (SQLSTATE 42P05)
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true, // Disables implicit prepared statements
+	}), &gorm.Config{
+		PrepareStmt: false, // Disables prepared statement caching
+	})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -90,6 +96,11 @@ func main() {
 	h := handlers.NewHandler(db)
 	authHandler := handlers.NewAuthHandler(db)
 
+    // Root Route (Health Check for Root)
+    r.GET("/", func(c *gin.Context) {
+        c.JSON(200, gin.H{"message": "API is Running", "status": "ok"})
+    })
+
 	// 9. Routes
 	api := r.Group("/api")
 	{
@@ -135,7 +146,6 @@ func main() {
 		api.POST("/upload", middleware.JWTMiddleware(), middleware.AdminMiddleware(), handlers.UploadFile)
 	}
 
-	// 10. Run Server
 	// 10. Run Server
 	log.Println("Server running on port 7860")
 	if err := r.Run("0.0.0.0:7860"); err != nil {
