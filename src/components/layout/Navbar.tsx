@@ -77,31 +77,41 @@ export const Navbar = () => {
             <div className="flex items-center gap-4">
               {user.role === "admin" && (
                 <Link
-                  to="/admin/dashboard"
-                  className="text-sage-600 font-medium hover:text-sage-800"
+                  to="/admin"
+                  className="px-4 py-2 rounded-full bg-sage-100 text-sage-800 font-bold hover:bg-sage-200 transition-colors text-sm"
                 >
-                  Dashboard
+                  Dashboard Admin
                 </Link>
               )}
-              <Link
-                to="/profile"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-sage-50 text-sage-700 font-medium hover:bg-sage-100 transition-colors"
-              >
-                <User size={18} />
-                {user.name.split(" ")[0]}
-              </Link>
+
+              <div className="relative group">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-sage-200 hover:border-sage-300 hover:shadow-md transition-all bg-white"
+                >
+                  <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-700 font-bold text-sm">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 max-w-[100px] truncate">
+                    {user.name.split(" ")[0]}
+                  </span>
+                </Link>
+
+                {/* Dropdown for future expansion if needed, currently just link acts as profile btn */}
+              </div>
+
               <button
                 onClick={logout}
-                className="text-gray-500 hover:text-red-500 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
                 title="Keluar"
               >
-                <LogOut size={20} />
+                <LogOut size={18} />
               </button>
             </div>
           ) : (
             <Link
               to="/login"
-              className="px-5 py-2 rounded-full bg-sage-600 text-white font-medium hover:bg-sage-700 transition-colors shadow-lg shadow-sage-200"
+              className="px-6 py-2.5 rounded-full bg-sage-900 text-white font-bold hover:bg-sage-800 transition-all shadow-lg shadow-sage-200 hover:shadow-sage-300 transform hover:-translate-y-0.5"
             >
               Masuk
             </Link>

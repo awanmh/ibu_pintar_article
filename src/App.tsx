@@ -43,6 +43,8 @@ function App() {
 
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />{" "}
+            {/* Fix for /admin/dashboard 404 */}
             <Route path="articles" element={<ArticlesPage />} />
             <Route path="create-article" element={<ArticleEditorPage />} />
             <Route path="articles/new" element={<ArticleEditorPage />} />
