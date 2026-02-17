@@ -138,7 +138,7 @@ func main() {
 	// 10. Run Server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "7860" // Hugging Face Spaces default port
 	}
 	log.Printf("Server running on port %s", port)
 	r.Run(":" + port)

@@ -106,12 +106,11 @@ _App will be accessible at `http://localhost:5173`_
 
 ## 🚀 Deployment
 
-### Backend (Render)
+### Backend (Hugging Face Spaces)
 
-- Runtime: Go
-- Build Command: `go build -o app`
-- Start Command: `./app`
-- Env Vars: `DATABASE_URL` (Supabase Transaction Mode), `JWT_SECRET`, `ALLOWED_ORIGINS`
+- **Space SDK**: Docker (Blank)
+- **Port**: 7860
+- **Env Vars**: `DATABASE_URL` (Supabase Transaction Mode), `JWT_SECRET`, `ALLOWED_ORIGINS`
 
 ### Frontend (Netlify)
 
