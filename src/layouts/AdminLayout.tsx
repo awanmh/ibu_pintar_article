@@ -1,12 +1,20 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LayoutDashboard, FileText, LogOut, ArrowLeft } from "lucide-react";
+import {
+  LayoutDashboard,
+  FileText,
+  LogOut,
+  ArrowLeft,
+  Menu,
+  X,
+} from "lucide-react";
 
 export const AdminLayout = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     console.log("AdminLayout: user state:", user);
@@ -16,6 +24,11 @@ export const AdminLayout = () => {
     }
   }, [user, navigate]);
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
   if (!user) return null;
 
   const sidebarLinks = [
@@ -24,15 +37,46 @@ export const AdminLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
+      {/* Mobile Header */}
+      <div className="md:hidden bg-sage-900 text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
+        <h2 className="text-lg font-serif font-bold">Admin Panel</h2>
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-1"
+        >
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-sage-900 text-white fixed h-full hidden md:flex flex-col">
-        <div className="p-6 border-b border-sage-800">
-          <h2 className="text-xl font-serif font-bold">Admin Panel</h2>
-          <p className="text-sm text-sage-400">Ibu Pintar Blog</p>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-sage-900 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen flex flex-col ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6 border-b border-sage-800 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-serif font-bold">Admin Panel</h2>
+            <p className="text-sm text-sage-400">Ibu Pintar Blog</p>
+          </div>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden text-sage-400 hover:text-white"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {sidebarLinks.map((link) => (
             <Link
               key={link.path}
@@ -84,7 +128,7 @@ export const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 p-8">
+      <main className="flex-1 p-8 md:p-12 overflow-y-auto h-screen">
         <Outlet />
       </main>
     </div>
