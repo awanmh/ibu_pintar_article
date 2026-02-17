@@ -13,6 +13,7 @@ RUN go mod download
 COPY . .
 
 # Build aplikasi
+RUN go mod tidy
 RUN go build -o main .
 
 # Ekspos port 7860 (Standar Hugging Face)
