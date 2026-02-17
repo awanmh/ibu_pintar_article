@@ -4,13 +4,11 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"backend/handlers"
 	"backend/middleware"
 	"backend/models"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
@@ -74,20 +72,35 @@ func main() {
 	// 5. Setup Router
 	r := gin.Default()
 
-	// 6. CORS Configuration
+	// 6. CORS Configuration with Logging
     allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
     if allowedOrigins == "" {
-        allowedOrigins = "http://localhost:5173" // Default Vite port
+        allowedOrigins = "http://localhost:5173,https://ibupintar.netlify.app" 
     }
     
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     strings.Split(allowedOrigins, ","),
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "X-Admin-Key", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+    // Custom CORS Middleware for Debugging
+    r.Use(func(c *gin.Context) {
+        origin := c.Request.Header.Get("Origin")
+        log.Printf("[CORS] Request Origin: %s", origin)
+        
+        // Allow all origins if * is set (dangerous for production but good for debugging)
+        if allowedOrigins == "*" {
+            c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+        } else if strings.Contains(allowedOrigins, origin) {
+             c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+        }
+
+        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, X-Admin-Key")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
+
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+
+        c.Next()
+    })
 
 	// 7. Static File Serving
 	r.Static("/uploads", "./uploads")

@@ -110,7 +110,13 @@ _App will be accessible at `http://localhost:5173`_
 
 - **Space SDK**: Docker (Blank)
 - **Port**: 7860
-- **Env Vars**: `DATABASE_URL` (Supabase Transaction Mode), `JWT_SECRET`, `ALLOWED_ORIGINS`
+- **Env Vars**:
+  - `DATABASE_URL`: `postgres://postgres.kbgnqhhexgqoavfxfxin:%40Malang240498@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres`
+  - `SUPABASE_URL`: `https://kbgnqhhexgqoavfxfxin.supabase.co`
+  - `SUPABASE_KEY`: `sb_publishable_...` (Get this from Supabase Dashboard -> Settings -> API)
+  - `JWT_SECRET`: `2wjZP4idNINxTxtd0w22OTTsdHUFg_gWOv4tEL4xVjU`
+  - `ALLOWED_ORIGINS`: `*` (Change to your Netlify URL for production)
+  - `GIN_MODE`: `release`
 
 ### Frontend (Netlify)
 

@@ -9,7 +9,9 @@ export const AdminLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
+    console.log("AdminLayout: user state:", user);
     if (!user) {
+      console.log("AdminLayout: No user, redirecting to login");
       navigate("/login");
     }
   }, [user, navigate]);

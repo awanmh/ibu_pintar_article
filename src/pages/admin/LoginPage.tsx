@@ -30,10 +30,29 @@ const LoginPage = () => {
       }
 
       // Store in Zustand (and localStorage)
-      login(data.user, data.token);
+      // Backend returns: { "message": "...", "data": { "token": "...", "user": { ... } } }
+      // OR based on previous code: { "message": "...", "token": "...", "user": ... }
+      // User says: { "data": { "token": "...", "user": "..." } }
+      // So we need to check the structure.
 
-      navigate("/admin");
+      const user = data.data?.user || data.user;
+      const token = data.data?.token || data.token;
+
+      if (!user || !token) {
+        throw new Error("Invalid response format from server");
+      }
+
+      console.log("Login successful! Token:", token);
+      console.log("User:", user);
+
+      login(user, token);
+
+      setTimeout(() => {
+        console.log("Navigating to dashboard...");
+        navigate("/admin");
+      }, 100);
     } catch (err: any) {
+      console.error("Login failed:", err);
       setError(err.message);
     }
   };
