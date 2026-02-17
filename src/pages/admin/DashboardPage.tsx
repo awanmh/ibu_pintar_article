@@ -54,8 +54,10 @@ const DashboardPage = () => {
         />
         <StatCard
           icon={Users}
-          title="Pengunjung Unik"
-          value="1.2k"
+          title="Rata-rata Baca"
+          value={
+            articles.length > 0 ? Math.round(totalViews / articles.length) : 0
+          }
           color="bg-orange-500"
         />
       </div>
