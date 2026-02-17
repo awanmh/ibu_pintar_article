@@ -136,10 +136,9 @@ func main() {
 	}
 
 	// 10. Run Server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "7860" // Hugging Face Spaces default port
+	// 10. Run Server
+	log.Println("Server running on port 7860")
+	if err := r.Run("0.0.0.0:7860"); err != nil {
+		log.Fatalf("Failed to run server: %v", err)
 	}
-	log.Printf("Server running on port %s", port)
-	r.Run(":" + port)
 }
