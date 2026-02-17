@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ibu-pintar-backend
+    runtime: go
+    plan: free
+    rootDir: backend
+    buildCommand: go build -o app
+    startCommand: ./app
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: ALLOWED_ORIGINS
+        value: https://ibu-pintar-frontend.netlify.app,http://localhost:5173
