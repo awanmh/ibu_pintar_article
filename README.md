@@ -1,6 +1,6 @@
 # Ibu Pintar Blog - High Performance Midwifery Portal
 
-A production-ready full-stack application designed for high performance and reliability, featuring a Rust backend and a modern React frontend.
+A production-ready full-stack application designed for high performance and reliability, featuring a **Go (Golang)** backend and a modern **React** frontend.
 
 ## 🚀 Tech Stack
 
@@ -12,20 +12,17 @@ A production-ready full-stack application designed for high performance and reli
 - **State Management:** Zustand
 - **Editor:** React Quill
 - **Icons:** Lucide React
+- **HTTP Client:** Native Fetch (Custom Wrapper)
 
 ### Backend
 
-- **Language:** Rust (2021 Edition)
-- **Framework:** Axum (High-performance web framework)
-- **Database Logic:** SQLx (Async, Compile-time checking)
-- **Runtime:** Tokio
-- **Serialization:** Serde
-- **Logging:** Tracing
-
-### Database
-
-- **System:** PostgreSQL
-- **Migrations:** SQLx Migrations
+- **Language:** Go (Golang)
+- **Framework:** Gin (High-performance web framework)
+- **Database Logic:** GORM (ORM for Golang)
+- **Database:** PostgreSQL
+- **Authentication:** JWT (JSON Web Tokens)
+- **File Storage:** Cloudinary (with local fallback)
+- **Security:** Bluemonday (HTML Sanitization), BCrypt (Password Hashing)
 
 ---
 
@@ -33,39 +30,39 @@ A production-ready full-stack application designed for high performance and reli
 
 ### Public User
 
-- **Browse Articles:** View articles by category (Kehamilan, Persalinan, etc.).
+- **Browse Articles:** View articles by category (Kehamilan, Persalinan, etc.) with pagination.
 - **Read Articles:** Fast loading article detail pages with formatted content.
-- **Comments:** View comments on articles.
-- **Search:** Filter articles by category.
+- **Search:** Find articles by title or content.
+- **Comments:** Post comments on articles (requires admin approval if configured).
 
-### Admin (Midwife)
+### Admin (Midwife) & User Profile
 
-- **Secure Access:** Header-based key authentication (`x-admin-key`).
+- **Secure Access:** JWT-based authentication.
 - **Dashboard:** Overview of content.
-- **Manage Articles:** Create and Delete articles.
+- **Manage Articles:** Create, Edit, and Delete articles.
+- **Comment Moderation:** Approve or delete user comments.
 - **Rich Text Editor:** Write content with headings, lists, and formatting.
-- **Image Upload:** Upload thumbnails directly to the server.
+- **Image Upload:** Integrated with Cloudinary for scalable hosting.
+- **Profile Management:** Update name and password.
 
 ---
 
 ## 🛠️ Setup Guide
 
-### prerequisites
+### Prerequisites
 
 - Node.js (v18+)
-- Rust (Cargo)
+- Go (v1.20+)
 - PostgreSQL Server
+- Cloudinary Account (Optional, for production image hosting)
 
 ### 1. Database Setup
 
-Ensure your PostgreSQL server is running.
+Ensure your PostgreSQL server is running. The application will automatically migrate schema on startup.
 
 ```bash
 # Create database
 createdb blog_db
-
-# Run migrations (or execute contents of backend/init.sql)
-psql -d blog_db -f backend/init.sql
 ```
 
 ### 2. Backend Setup
@@ -74,11 +71,18 @@ psql -d blog_db -f backend/init.sql
 cd backend
 
 # Create .env
-echo "DATABASE_URL=postgres://user:password@localhost/blog_db" > .env
-echo "RUST_LOG=backend=debug,tower_http=debug" >> .env
+# Copy the example or set your own variables
+echo "DATABASE_URL=host=localhost user=postgres password=password dbname=blog_db port=5432 sslmode=disable" > .env
+echo "PORT=8080" >> .env
+echo "JWT_SECRET=your_secret_key" >> .env
+echo "ALLOWED_ORIGINS=http://localhost:5173" >> .env
+# Optional: Cloudinary
+# echo "CLOUDINARY_CLOUD_NAME=..." >> .env
+# echo "CLOUDINARY_API_KEY=..." >> .env
+# echo "CLOUDINARY_API_SECRET=..." >> .env
 
 # Run Server
-cargo run
+go run main.go
 ```
 
 _Server will start on `http://localhost:8080`_
@@ -100,15 +104,17 @@ _App will be accessible at `http://localhost:5173`_
 
 ---
 
-## ⚠️ System Limitations & Future Improvements
+## 🚀 Deployment
 
-While this application represents a significant upgrade from a prototype, several areas require attention for an "Enterprise Class" deployment:
+### Backend (Render)
 
-1.  **Authentication:** Currently uses a hardcoded API key (`secret123`). Real-world apps must implement JWT or Session-based auth with Role-Based Access Control (RBAC).
-2.  **Image Hosting:** Images are stored on the local filesystem of the API server. This is not scalable (stateless). Production apps should use AWS S3 or Cloudinary.
-3.  **Security:**
-    - **CORS:** Is currently set to allow ALL (`*`). Must restrict to specific frontend domains.
-    - **Rate Limiting:** No protection against DDoS or abuse. Axum `tower-governor` should be implemented.
-    - **Input Sanitation:** While SQLx prevents injection, rich text HTML content needs sanitization (e.g., `ammonia` crate) to prevent XSS.
-4.  **Pagination:** APIs return ALL records. This will choke performance with thousands of articles. Pagination (Offset/Cursor) is mandatory.
-5.  **Error Reporting:** Logs go to stdout. Production needs structured logging sent to Datadog/Sentry.
+- Runtime: Go
+- Build Command: `go build -o app`
+- Start Command: `./app`
+- Env Vars: `DATABASE_URL` (Supabase Transaction Mode), `JWT_SECRET`, `ALLOWED_ORIGINS`
+
+### Frontend (Netlify)
+
+- Build Command: `npm run build`
+- Publish Directory: `dist`
+- Env Vars: `VITE_API_URL` (Your Render URL)
